@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+# https://www.geetest.com/demo/
+
 import json
 import time
 import random
