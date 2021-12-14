@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import io
 import re
 import cv2
