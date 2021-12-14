@@ -42,7 +42,7 @@ class Geetestlogin(object):
 
     def get_gt_challenge(self) -> tuple:
         """
-        获取gt,captchaKey以及challenge
+        获取gt以及challenge
         :return: gt,challenge,captchaKey
         """
         params = {
