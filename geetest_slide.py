@@ -349,7 +349,7 @@ class Geetestlogin(JiyanTrack):
         #     "s": s
         # }
         try:
-            # res_api = self.session.post(url=self.api_fullpage_1, data=api_payload).json()
+            # res_api = self.session.post(url=self.api_fullpage_2, data=api_payload).json()
             # if res_api["msg"] == "success":
             #     w = res_api["data"]
             # else:
