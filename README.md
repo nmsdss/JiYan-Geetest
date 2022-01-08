@@ -9,7 +9,8 @@
     geetest_slide.py  # 滑动模式 
     
     ./static/js/api.js # api接口 
-   
+  
+更新
 -
 #### 2022.1.08 更新日志
 在一位朋友的帮助下,对geetest_slide.py做了部分优化,主要提高了成功率和运行效率(目前成功率80%左右)
