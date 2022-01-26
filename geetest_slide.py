@@ -86,10 +86,10 @@ class JiyanTrack(object):
                 res_G = abs(pixel1[1] - pixel2[1])  # 计算RGB差
                 res_B = abs(pixel1[2] - pixel2[2])  # 计算RGB差
                 if res_R > threshold and res_G > threshold and res_B > threshold:
-                    return i + 3
+                    return i - 5
 
     @staticmethod
-    def get_trace_fast(distance: int) -> list:
+    def get_track_fast(distance: int) -> list:
         track = [[random.randint(19, 30), random.randint(20, 25), 0]]
         count = 0
         scale = [0.2, 0.5, random.randint(6, 8) / 10]
@@ -167,7 +167,7 @@ class JiyanTrack(object):
         track_list = self.format_track(track)  # 路径列表
         if tag != 1:
             # 采用垃圾算法获取轨迹 建议重写
-            new_track_list = self.get_trace_fast(distance)
+            new_track_list = self.get_track_fast(distance)
         else:
             new_track_list = track_list
         return new_track_list
@@ -180,7 +180,7 @@ class JiyanTrack(object):
         new_track_list = self.choice_track_2(distance)
         return new_track_list
 
-    def get_distance_trace(self, session: object, gap_bg_url: str, full_bg_url: str) -> tuple:
+    def get_distance_track(self, session: object, gap_bg_url: str, full_bg_url: str) -> tuple:
         """
         :param gap_bg_url: 带缺口的图片url
         :param full_bg_url: 不带缺口的图片url
@@ -204,7 +204,7 @@ class Geetest_Slide(JiyanTrack):
         super().__init__()
         self.session = requests.session()
         self.host = "https://static.geetest.com/"
-        self.url_challenge = "https://o2om.cn/api/v2/auth/gt/challenge"
+        self.url_challenge = "https://www.geetest.com/demo/gt/register-slide"
         self.url_gettype = "https://apiv6.geetest.com/gettype.php"  # 非必要请求
         self.url_resources = "https://apiv6.geetest.com/get.php"
         self.url_ajax = "https://api.geetest.com/ajax.php"
@@ -235,7 +235,7 @@ class Geetest_Slide(JiyanTrack):
             response = self.session.get(url=self.url_challenge, params=params)
             logger.debug(f"获取初始gt_challenge成功 -> {response.status_code, response.json()}")
             # self.session.get(self.url_gettype, params={"gt": response.json()["data"]["gt"]})
-            return response.json()["data"]["gt"], response.json()["data"]["challenge"]
+            return response.json()["gt"], response.json()["challenge"]
         except Exception as e:
             logger.error(f"参数解析失败 -> {response.text}")
             raise e
@@ -350,13 +350,13 @@ class Geetest_Slide(JiyanTrack):
             gap_bg = data_dict["bg"]  # 带缺口的背景
             full_bg = data_dict["fullbg"]  # 不带缺口的背景
             # slice = data_dict["slice"]  # 缺口小图
-            gct_path = data_dict["gct_path"]  # gct.js的地址
+            gct_path = data_dict["gct_path"][1:]  # gct.js的地址
             return gt, challenge, s, id, gap_bg, full_bg, gct_path
         except Exception as e:
             logger.error(f"参数解析失败 -> {response.text}")
             raise e
 
-    def get_validate(self, gt: str, challenge: str, s_s: str, url_gct: str, distance, passtimes, trace):
+    def get_validate(self, gt: str, challenge: str, s_s: str, url_gct: str, distance, passtimes, track):
         """
 
         @param gt: 上一请求返回
@@ -367,6 +367,7 @@ class Geetest_Slide(JiyanTrack):
         """
         try:
             e_e = self.get_e()  # 串需要新获取一个随机字符串
+            print(self.host + url_gct)
             res_gct = self.session.get(url=self.host + url_gct)  # 下载gct.js文件
             api_payload = {
                 "gt": gt,
@@ -375,7 +376,7 @@ class Geetest_Slide(JiyanTrack):
                 "s": s_s,
                 "distance": distance,
                 "passtimes": passtimes,
-                "trace": str(trace),
+                "track": str(track),
                 "callback": res_gct.text
             }
             res_api = self.session.post(url=self.api_slide, data=api_payload).json()
@@ -417,10 +418,10 @@ class Geetest_Slide(JiyanTrack):
             s = self.get_s_c(e_e, gt, challenge)
             self.get_geetest_ajax_user(e_e, gt, challenge, s)
             gt_new, challenge_new, s_s, id, gap_bg, full_bg, gct_path = self.get_material(gt, challenge)
-            distance, trace, passtimes = self.get_distance_trace(self.session, self.host + gap_bg, self.host + full_bg)
-            validate = self.get_validate(gt_new, challenge_new, s_s, gct_path, distance, passtimes, trace)
+            distance, track, passtimes = self.get_distance_track(self.session, self.host + gap_bg, self.host + full_bg)
+            validate = self.get_validate(gt_new, challenge_new, s_s, gct_path, distance, passtimes, track)
         except Exception:
-            logger.error(traceback.format_exc())
+            logger.error(trackback.format_exc())
 
 
 if __name__ == '__main__':
