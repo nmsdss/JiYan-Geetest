@@ -75,7 +75,7 @@ app.post("/api_slide/get_w", (req, res) => {
             s:result.s,
             distance:result.distance,
             passtimes:result.passtimes,
-            trace:result.trace,
+            trace:result.track,
         }));
         res.send({
             "msg": "success",
